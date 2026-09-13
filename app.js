@@ -562,6 +562,7 @@ const DAYS = [
 function emptyState() {
   return {
     name: "Rafi",
+    lang: "en",
     startDate: "",
     service: "",
     checks: {},
@@ -579,13 +580,70 @@ function emptyState() {
   };
 }
 
+function detectLang() {
+  const param = new URLSearchParams(window.location.search).get("lang");
+  if (param === "prs" || param === "dari" || param === "fa") return "prs";
+  if (param === "en") return "en";
+  const nav = (navigator.language || "").toLowerCase();
+  if (nav.startsWith("fa") || nav.startsWith("prs") || nav.startsWith("ps")) return "prs";
+  return "en";
+}
+
+function t(key) {
+  const pack = I18N[state.lang] || I18N.en;
+  return pack[key] ?? I18N.en[key] ?? key;
+}
+
+function itemText(item) {
+  if (state.lang === "prs" && ITEM_PRS[item.id]) return ITEM_PRS[item.id];
+  return item.text;
+}
+
+function serviceCopy(service) {
+  if (state.lang === "prs" && SERVICES_PRS[service.id]) {
+    return { ...service, ...SERVICES_PRS[service.id] };
+  }
+  return service;
+}
+
+function studyLines(serviceId) {
+  if (state.lang === "prs" && STUDY_PRS[serviceId]) return STUDY_PRS[serviceId];
+  return SKILL_STUDY[serviceId];
+}
+
+function localizedDay(day) {
+  if (state.lang !== "prs" || !DAY_PRS[day.id]) return day;
+  const extra = DAY_PRS[day.id];
+  return {
+    ...day,
+    title: extra.title,
+    goal: extra.goal,
+    plain: extra.plain,
+    pictureAlt: extra.pictureAlt || day.pictureAlt,
+    sections: day.sections.map((section, index) => ({
+      ...section,
+      ...(extra.sections[index] || {}),
+    })),
+  };
+}
+
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return emptyState();
-    return { ...emptyState(), ...JSON.parse(raw) };
+    const base = emptyState();
+    if (!raw) {
+      base.lang = detectLang();
+      return base;
+    }
+    const merged = { ...base, ...JSON.parse(raw) };
+    const param = new URLSearchParams(window.location.search).get("lang");
+    if (param === "prs" || param === "dari" || param === "fa") merged.lang = "prs";
+    if (param === "en") merged.lang = "en";
+    return merged;
   } catch {
-    return emptyState();
+    const base = emptyState();
+    base.lang = detectLang();
+    return base;
   }
 }
 
@@ -625,7 +683,7 @@ function currentDayNumber() {
 
 function renderWeekMap() {
   const root = document.getElementById("week");
-  const labels = ["Choose", "Practice", "Portfolio", "Offer", "Gig", "Clients", "Launch"];
+  const labels = t("weekLabels");
   const today = currentDayNumber();
   root.innerHTML = DAYS.map((day) => {
     const progress = dayProgress(day);
@@ -636,7 +694,7 @@ function renderWeekMap() {
       .filter(Boolean)
       .join(" ");
     return `<a class="${classes}" href="#day-${day.id}">
-      <b>Day ${day.id}</b>
+      <b>${t("dayStamp")(day.id)}</b>
       <span>${labels[day.id - 1]}</span>
       <span>${progress.done}/${progress.total}</span>
     </a>`;
@@ -647,42 +705,43 @@ function renderTask(item) {
   const checked = Boolean(state.checks[item.id]);
   return `<label class="task${checked ? " done" : ""}">
     <input type="checkbox" data-check="${item.id}" ${checked ? "checked" : ""}>
-    <span>${item.text}</span>
+    <span>${itemText(item)}</span>
   </label>`;
 }
 
 function renderPicker() {
   return `<div class="choices" role="list">
-    ${SERVICES.map((service) => `<button type="button" class="choice${state.service === service.id ? " selected" : ""}" data-service="${service.id}" aria-pressed="${state.service === service.id}">
-      <b>${service.label}</b>
-      <span>${service.why}</span>
-    </button>`).join("")}
+    ${SERVICES.map((service) => {
+      const copy = serviceCopy(service);
+      return `<button type="button" class="choice${state.service === service.id ? " selected" : ""}" data-service="${service.id}" aria-pressed="${state.service === service.id}">
+      <b>${copy.label}</b>
+      <span>${copy.why}</span>
+    </button>`;
+    }).join("")}
   </div>
-  <div class="warn">
-    <strong>Avoid this week:</strong> full applications, advanced AI agents, or complete marketing strategies. They are too big for seven days.
-  </div>`;
+  <div class="warn">${t("avoid")}</div>`;
 }
 
 function renderStudy() {
-  const extra = SKILL_STUDY[state.service];
+  const extra = studyLines(state.service);
   if (!extra) {
-    return `<p class="plain">Pick a service on Day 1. This box will then show the exact study list for that skill.</p>`;
+    return `<p class="plain">${t("studyWait")}</p>`;
   }
-  const service = SERVICES.find((item) => item.id === state.service);
-  return `<div class="plain"><strong>Because you chose ${escapeHtml(service.label)}, study these:</strong>
+  const service = serviceCopy(SERVICES.find((item) => item.id === state.service));
+  return `<div class="plain"><strong>${escapeHtml(t("studyBecause")(service.label))}</strong>
     <ul>${extra.map((line) => `<li>${line}</li>`).join("")}</ul>
   </div>`;
 }
 
 function renderFormula() {
   const { deliverable, customer, period } = state.offer;
-  const sentence = `I will provide ${deliverable || "…"} to ${customer || "…"} within ${period || "…"}.`;
+  const sentence = t("offerSentence")(deliverable, customer, period);
   return `<div class="formula">
-    <strong>Decision formula</strong>
+    <strong>${t("formulaTitle")}</strong>
     <div class="row">
-      <label>Specific deliverable<input data-offer="deliverable" value="${escapeHtml(deliverable)}" placeholder="five branded Instagram posts"></label>
-      <label>Specific customer<input data-offer="customer" value="${escapeHtml(customer)}" placeholder="restaurants"></label>
-      <label>Delivery period<input data-offer="period" value="${escapeHtml(period)}" placeholder="three days"></label>
+      <label>${t("deliverable")}<input data-offer="deliverable" value="${escapeHtml(deliverable)}" placeholder="${escapeHtml(t("phDeliverable"))}"></label>
+      <label>${t("customer")}<input data-offer="customer" value="${escapeHtml(customer)}" placeholder="${escapeHtml(t("phCustomer"))}"></label>
+      <label>${t("period")}<input data-offer="period" value="${escapeHtml(period)}" placeholder="${escapeHtml(t("phPeriod"))}"></label>
     </div>
     <p class="preview">${escapeHtml(sentence)}</p>
   </div>`;
@@ -692,23 +751,23 @@ function renderCompetitors() {
   const rows = state.competitors
     .map((row, index) => `<tr>
       <td>${index + 1}</td>
-      <td><input data-comp="${index}" data-field="title" value="${escapeHtml(row.title)}" placeholder="Gig title"></td>
+      <td><input data-comp="${index}" data-field="title" value="${escapeHtml(row.title)}" placeholder="${escapeHtml(t("phTitle"))}"></td>
       <td><input data-comp="${index}" data-field="price" value="${escapeHtml(row.price)}" placeholder="$"></td>
       <td><input data-comp="${index}" data-field="reviews" value="${escapeHtml(row.reviews)}" placeholder="12 / 5.0"></td>
-      <td><input data-comp="${index}" data-field="weak" value="${escapeHtml(row.weak)}" placeholder="What looks weak"></td>
-      <td><input data-comp="${index}" data-field="difference" value="${escapeHtml(row.difference)}" placeholder="How you can be different"></td>
+      <td><input data-comp="${index}" data-field="weak" value="${escapeHtml(row.weak)}" placeholder="${escapeHtml(t("phWeak"))}"></td>
+      <td><input data-comp="${index}" data-field="difference" value="${escapeHtml(row.difference)}" placeholder="${escapeHtml(t("phDiff"))}"></td>
     </tr>`)
     .join("");
   return `<div class="widget">
-    <p><strong>Competitor notebook.</strong> Start with 5. Add more until you reach 20. Also note packages, delivery time, thumbnail, and portfolio quality in your own file if needed.</p>
+    <p>${t("competitorNote")}</p>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>#</th><th>Title</th><th>Price</th><th>Reviews</th><th>Weak</th><th>Your difference</th></tr></thead>
+        <thead><tr><th>${t("thNum")}</th><th>${t("thTitle")}</th><th>${t("thPrice")}</th><th>${t("thReviews")}</th><th>${t("thWeak")}</th><th>${t("thDiff")}</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
     </div>
     <div class="actions">
-      <button class="ghost" type="button" data-add-competitor>Add another competitor</button>
+      <button class="ghost" type="button" data-add-competitor>${t("addCompetitor")}</button>
     </div>
   </div>`;
 }
@@ -716,15 +775,15 @@ function renderCompetitors() {
 function renderPackages() {
   return `<div class="table-wrap">
     <table>
-      <thead><tr><th>Package</th><th>Deliverable</th><th>Delivery</th><th>Revisions</th></tr></thead>
+      <thead><tr><th>${t("packHead")}</th><th>${t("packDeliverable")}</th><th>${t("packDelivery")}</th><th>${t("packRevisions")}</th></tr></thead>
       <tbody>
-        <tr><td>Basic</td><td>3 designs</td><td>3 days</td><td>1</td></tr>
-        <tr><td>Standard</td><td>6 designs</td><td>4 days</td><td>2</td></tr>
-        <tr><td>Premium</td><td>12 designs plus templates</td><td>6 days</td><td>3</td></tr>
+        <tr><td>${t("packBasic")}</td><td>${t("packBasicWhat")}</td><td>${t("packDays")(3)}</td><td>1</td></tr>
+        <tr><td>${t("packStandard")}</td><td>${t("packStdWhat")}</td><td>${t("packDays")(4)}</td><td>2</td></tr>
+        <tr><td>${t("packPremium")}</td><td>${t("packPremWhat")}</td><td>${t("packDays")(6)}</td><td>3</td></tr>
       </tbody>
     </table>
   </div>
-  <p class="plain">Change the numbers to match your service. Keep the idea: small / medium / extra.</p>`;
+  <p class="plain">${t("packHint")}</p>`;
 }
 
 function renderPrice() {
@@ -732,36 +791,38 @@ function renderPrice() {
   const keep = Math.round(price * 80) / 100;
   const fee = Math.round((price - keep) * 100) / 100;
   return `<div class="widget">
-    <label>Order price in dollars
+    <label>${t("orderPrice")}
       <input data-price type="number" min="0" step="1" value="${escapeHtml(state.price)}">
     </label>
     <div class="price-out">
-      <div><span>Fiverr keeps 20%</span><b>$${fee.toFixed(2)}</b></div>
-      <div><span>You keep 80%</span><b>$${keep.toFixed(2)}</b></div>
+      <div><span>${t("fiverrKeeps")}</span><b>$${fee.toFixed(2)}</b></div>
+      <div><span>${t("youKeep")}</span><b>$${keep.toFixed(2)}</b></div>
     </div>
-    <p>That leftover must still pay for your time, messages, revisions, software, taxes, and profit.</p>
+    <p>${t("leftover")}</p>
   </div>`;
 }
 
 function renderTemplates() {
-  return `<div class="copy-list">
+  return `<p class="plain">${t("templateNote")}</p>
+  <div class="copy-list">
     ${TEMPLATES.map((item) => `<article class="copy-card">
       <header>
-        <strong>${item.title}</strong>
-        <button type="button" data-copy="${escapeHtml(item.text)}">Copy</button>
+        <strong>${state.lang === "prs" ? TEMPLATES_PRS_META[item.id] : item.title}</strong>
+        <button type="button" data-copy="${escapeHtml(item.text)}">${t("copy")}</button>
       </header>
-      <p>${escapeHtml(item.text)}</p>
+      <p lang="en" dir="ltr">${escapeHtml(item.text)}</p>
     </article>`).join("")}
   </div>`;
 }
 
 function renderExam() {
+  const labels = t("exam");
   const rows = EXAM_AREAS.map((area) => {
     const value = Number(state.scores[area.id] || 0);
     const pass = value >= 4;
     const fail = value > 0 && value < 4;
     return `<label class="score${pass ? " pass" : ""}${fail ? " fail" : ""}">
-      <span>${area.label} (pass = 4)</span>
+      <span>${labels[area.id]} ${t("passMark")}</span>
       <input data-score="${area.id}" type="number" min="1" max="5" value="${value || ""}" placeholder="1–5">
       <output>${value ? `${value}/5` : "—"}</output>
     </label>`;
@@ -769,9 +830,9 @@ function renderExam() {
   const quality = Number(state.scores.quality || 0);
   const blocked = quality > 0 && quality < 4;
   return `<div class="widget">
-    <p>Score each area from 1 to 5. Passing score is 4. If technical quality is below 4, do not launch today. Practise more instead.</p>
+    <p>${t("examIntro")}</p>
     <div class="scores">${rows}</div>
-    <p class="warn" id="exam-gate"${blocked ? "" : " hidden"}><strong>Do not launch.</strong> Technical quality is under 4. Fix the work first.</p>
+    <p class="warn" id="exam-gate"${blocked ? "" : " hidden"}>${t("examGate")}</p>
   </div>`;
 }
 
@@ -794,20 +855,21 @@ function extraHtml(kind) {
   }
 }
 
-function renderDay(day) {
-  const progress = dayProgress(day);
-  const open = Boolean(state.openDays[day.id]);
-  const today = currentDayNumber() === day.id;
-  return `<article class="day${open ? " open" : ""}" id="day-${day.id}">
-    <button class="day-summary" type="button" data-toggle="${day.id}" aria-expanded="${open}">
+function renderDay(rawDay) {
+  const day = localizedDay(rawDay);
+  const progress = dayProgress(rawDay);
+  const open = Boolean(state.openDays[rawDay.id]);
+  const today = currentDayNumber() === rawDay.id;
+  return `<article class="day${open ? " open" : ""}" id="day-${rawDay.id}">
+    <button class="day-summary" type="button" data-toggle="${rawDay.id}" aria-expanded="${open}">
       <div class="day-art">
         <img src="${day.picture}" width="280" height="280" alt="${escapeHtml(day.pictureAlt)}">
       </div>
       <div>
-        <span class="stamp">Day ${day.id}</span>
+        <span class="stamp">${t("dayStamp")(rawDay.id)}</span>
         <h2>${day.title}</h2>
-        <p><strong>Goal:</strong> ${day.goal}${today ? " · This is today’s work." : ""}</p>
-        <p data-day-progress="${day.id}">${progress.done} of ${progress.total} boxes ticked${progress.complete ? " · day complete" : ""}</p>
+        <p><strong>${t("goalWord")}</strong> ${day.goal}${today ? ` · ${t("todayWork")}` : ""}</p>
+        <p data-day-progress="${rawDay.id}">${t("boxes")(progress.done, progress.total, progress.complete)}</p>
       </div>
       <span class="chevron" aria-hidden="true"></span>
     </button>
@@ -831,14 +893,44 @@ function renderDay(day) {
 function updateProgress() {
   const ids = allItemIds();
   const done = ids.filter((id) => state.checks[id]).length;
-  document.getElementById("progress-text").textContent = `${done} / ${ids.length} tasks`;
+  document.getElementById("progress-text").textContent = `${done} / ${ids.length} ${t("tasks")}`;
   document.getElementById("progress-bar").style.width = `${ids.length ? (done / ids.length) * 100 : 0}%`;
   const name = state.name.trim() || "Rafi";
-  document.getElementById("learner-label").textContent = `${name} · 7-day launch sprint`;
+  document.getElementById("learner-label").textContent = `${name} · ${t("sprintSub")}`;
+}
+
+function applyStaticLang() {
+  const rtl = state.lang === "prs";
+  document.documentElement.lang = rtl ? "fa-AF" : "en";
+  document.documentElement.dir = rtl ? "rtl" : "ltr";
+  document.title = t("docTitle");
+  const desc = document.querySelector('meta[name="description"]');
+  if (desc) desc.setAttribute("content", t("docDesc"));
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    el.innerHTML = t(el.getAttribute("data-i18n"));
+  });
+  document.querySelectorAll("[data-i18n-aria]").forEach((el) => {
+    el.setAttribute("aria-label", t(el.getAttribute("data-i18n-aria")));
+  });
+  document.querySelectorAll("[data-lang]").forEach((button) => {
+    const active = button.getAttribute("data-lang") === state.lang;
+    button.setAttribute("aria-pressed", String(active));
+    button.classList.toggle("active", active);
+  });
+}
+
+function setLang(lang) {
+  state.lang = lang === "prs" ? "prs" : "en";
+  const url = new URL(window.location.href);
+  url.searchParams.set("lang", state.lang);
+  window.history.replaceState({}, "", url);
+  saveState();
+  render();
 }
 
 function render() {
   const scrollY = window.scrollY;
+  applyStaticLang();
   document.getElementById("learner-name").value = state.name;
   document.getElementById("start-date").value = state.startDate;
   renderWeekMap();
@@ -851,14 +943,20 @@ function copyText(text) {
   navigator.clipboard.writeText(text).then(() => {
     const button = document.activeElement;
     if (button && button.tagName === "BUTTON") {
-      const original = button.textContent;
-      button.textContent = "Copied";
+      const original = t("copy");
+      button.textContent = t("copied");
       setTimeout(() => {
         button.textContent = original;
       }, 1200);
     }
   });
 }
+
+document.querySelector(".lang-switch").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-lang]");
+  if (!button) return;
+  setLang(button.getAttribute("data-lang"));
+});
 
 document.getElementById("learner-name").addEventListener("input", (event) => {
   state.name = event.target.value;
@@ -921,7 +1019,7 @@ document.getElementById("days").addEventListener("change", (event) => {
   const progress = dayProgress(day);
   const label = article.querySelector("[data-day-progress]");
   if (label) {
-    label.textContent = `${progress.done} of ${progress.total} boxes ticked${progress.complete ? " · day complete" : ""}`;
+    label.textContent = t("boxes")(progress.done, progress.total, progress.complete);
   }
 });
 
@@ -932,7 +1030,11 @@ document.getElementById("days").addEventListener("input", (event) => {
     saveState();
     const preview = document.querySelector(".preview");
     if (preview) {
-      preview.textContent = `I will provide ${state.offer.deliverable || "…"} to ${state.offer.customer || "…"} within ${state.offer.period || "…"}.`;
+      preview.textContent = t("offerSentence")(
+        state.offer.deliverable,
+        state.offer.customer,
+        state.offer.period
+      );
     }
     return;
   }
@@ -986,13 +1088,15 @@ document.getElementById("expand-all").addEventListener("click", () => {
 });
 
 document.getElementById("reset-progress").addEventListener("click", () => {
-  const ok = window.confirm("This will clear ticks, notes, and scores in this browser. Continue?");
+  const ok = window.confirm(t("resetConfirm"));
   if (!ok) return;
   const name = state.name;
   const startDate = state.startDate;
+  const lang = state.lang;
   state = emptyState();
   state.name = name;
   state.startDate = startDate;
+  state.lang = lang;
   saveState();
   render();
 });

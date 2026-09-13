@@ -9,11 +9,11 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fraunces:opsz,wght@9..144,560;9..144,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fraunces:opsz,wght@9..144,560;9..144,700&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a class="skip" href="#week">Skip to the 7-day plan</a>
+  <a class="skip" href="#week" data-i18n="skip">Skip to the 7-day plan</a>
 
   <header class="topbar">
     <div class="wrap topbar-inner">
@@ -24,16 +24,20 @@
           <text x="32" y="44" text-anchor="middle" font-family="Georgia, serif" font-size="28" font-weight="700" fill="#B23A24">7</text>
         </svg>
         <div>
-          <strong>Launch sprint</strong>
+          <strong data-i18n="brand">Launch sprint</strong>
           <span id="learner-label">A one-week checklist</span>
         </div>
       </div>
       <div class="progress-block">
         <div class="progress-label">
-          <span>Progress</span>
+          <span data-i18n="progress">Progress</span>
           <span id="progress-text">0 / 0</span>
         </div>
         <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+      </div>
+      <div class="lang-switch" role="group" aria-label="Language" data-i18n-aria="langLabel">
+        <button type="button" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang="prs" aria-pressed="false">دری</button>
       </div>
     </div>
   </header>
@@ -45,156 +49,157 @@
         <img src="assets/hero-workshop.webp" width="1280" height="720" alt="A freelancer at a workshop desk with a laptop, checklist, calendar, and three sample designs on the wall">
       </div>
       <div class="hero-copy">
-        <p class="kicker">Learning todo list</p>
-        <h1>Open a Fiverr shop in seven focused days</h1>
-        <p class="lede">Work about 5–6 hours a day. Tick each box when it is done. This page remembers your progress in this browser.</p>
+        <p class="kicker" data-i18n="kickerTodo">Learning todo list</p>
+        <h1 data-i18n="heroTitle">Open a Fiverr shop in seven focused days</h1>
+        <p class="lede" data-i18n="heroLede">Work about 5–6 hours a day. Tick each box when it is done. This page remembers your progress in this browser.</p>
         <div class="learner">
-          <label>This plan is for
+          <label><span data-i18n="planFor">This plan is for</span>
             <input id="learner-name" type="text" maxlength="40" placeholder="Rafi" autocomplete="name">
           </label>
-          <label>Day 1 starts on
+          <label><span data-i18n="day1Starts">Day 1 starts on</span>
             <input id="start-date" type="date">
           </label>
         </div>
         <div class="chips">
-          <span class="chip">1 skill</span>
-          <span class="chip">3 samples</span>
-          <span class="chip">1 Gig</span>
-          <span class="chip">Ready for order 1</span>
+          <span class="chip" data-i18n="chipSkill">1 skill</span>
+          <span class="chip" data-i18n="chipSamples">3 samples</span>
+          <span class="chip" data-i18n="chipGig">1 Gig</span>
+          <span class="chip" data-i18n="chipReady">Ready for order 1</span>
         </div>
       </div>
     </section>
 
-    <section class="honest" aria-label="What this week can and cannot do">
+    <section class="honest" aria-label="What this week can and cannot do" data-i18n-aria="honestLabel">
       <article class="honest-card no">
         <img src="assets/honest-not-rank.webp" width="256" height="256" alt="A trophy sitting out of reach on a high shelf">
         <div>
-          <h2>Not the goal</h2>
-          <p>You will <strong>not</strong> rank #1 on Fiverr in seven days. Fame, ads, and big income are later.</p>
+          <h2 data-i18n="notGoal">Not the goal</h2>
+          <p data-i18n="notGoalText">You will <strong>not</strong> rank #1 on Fiverr in seven days. Fame, ads, and big income are later.</p>
         </div>
       </article>
       <article class="honest-card yes">
         <img src="assets/outcome-system.webp" width="256" height="256" alt="A neat folder, checklist, and package ready to send">
         <div>
-          <h2>The real goal</h2>
-          <p>Become a beginner who can attract, understand, and serve the first client without messy cancellations or bad reviews.</p>
+          <h2 data-i18n="realGoal">The real goal</h2>
+          <p data-i18n="realGoalText">Become a beginner who can attract, understand, and serve the first client without messy cancellations or bad reviews.</p>
         </div>
       </article>
     </section>
 
     <header class="section-head">
-      <p class="kicker">Friday night picture</p>
-      <h2>If the week works, you will have these five things</h2>
+      <p class="kicker" data-i18n="fridayKicker">Friday night picture</p>
+      <h2 data-i18n="fridayTitle">If the week works, you will have these five things</h2>
     </header>
-    <section class="outcomes" aria-label="Five outcomes of the sprint">
+    <section class="outcomes" aria-label="Five outcomes of the sprint" data-i18n-aria="outcomesLabel">
       <article class="outcome">
         <img src="assets/outcome-skill.webp" width="400" height="400" alt="One finished design on a desk next to a craft tool">
-        <div><strong>1 sellable skill</strong><p>One job you can do well, not ten jobs you do poorly.</p></div>
+        <div><strong data-i18n="outSkill">1 sellable skill</strong><p data-i18n="outSkillText">One job you can do well, not ten jobs you do poorly.</p></div>
       </article>
       <article class="outcome">
         <img src="assets/outcome-portfolio.webp" width="400" height="400" alt="Three framed sample pictures in a row">
-        <div><strong>3 portfolio samples</strong><p>Proof a buyer can see before they pay.</p></div>
+        <div><strong data-i18n="outPort">3 portfolio samples</strong><p data-i18n="outPortText">Proof a buyer can see before they pay.</p></div>
       </article>
       <article class="outcome">
         <img src="assets/outcome-gig.webp" width="400" height="400" alt="A shop window with one clear product picture">
-        <div><strong>1 clear Gig</strong><p>A page that says who you help and what they get.</p></div>
+        <div><strong data-i18n="outGig">1 clear Gig</strong><p data-i18n="outGigText">A page that says who you help and what they get.</p></div>
       </article>
       <article class="outcome">
         <img src="assets/outcome-talk.webp" width="400" height="400" alt="Two speech bubbles and a handshake">
-        <div><strong>Practiced messages</strong><p>You already know how to talk to a client.</p></div>
+        <div><strong data-i18n="outTalk">Practiced messages</strong><p data-i18n="outTalkText">You already know how to talk to a client.</p></div>
       </article>
       <article class="outcome">
         <img src="assets/outcome-system.webp" width="400" height="400" alt="Folder, checklist, and delivery box">
-        <div><strong>A first-order system</strong><p>Packages, files, checks, and delivery are ready.</p></div>
+        <div><strong data-i18n="outSys">A first-order system</strong><p data-i18n="outSysText">Packages, files, checks, and delivery are ready.</p></div>
       </article>
     </section>
 
     <section class="panel">
-      <p class="kicker">Every day looks like this</p>
-      <h2>Daily timetable · about 5½ hours</h2>
+      <p class="kicker" data-i18n="timeKicker">Every day looks like this</p>
+      <h2 data-i18n="timeTitle">Daily timetable · about 5½ hours</h2>
       <ol class="timetable">
         <li>
           <time datetime="09:00">09:00–10:30</time>
-          <div><strong>Learn</strong><small>One focused lesson. No hopping between topics.</small></div>
+          <div><strong data-i18n="slotLearn">Learn</strong><small data-i18n="slotLearnText">One focused lesson. No hopping between topics.</small></div>
         </li>
         <li>
           <time datetime="10:45">10:45–12:15</time>
-          <div><strong>Guided practice</strong><small>Copy a good example. Hands on the tools.</small></div>
+          <div><strong data-i18n="slotGuided">Guided practice</strong><small data-i18n="slotGuidedText">Copy a good example. Hands on the tools.</small></div>
         </li>
         <li>
           <time datetime="13:00">13:00–14:30</time>
-          <div><strong>Independent project</strong><small>Make something of your own.</small></div>
+          <div><strong data-i18n="slotOwn">Independent project</strong><small data-i18n="slotOwnText">Make something of your own.</small></div>
         </li>
         <li>
           <time datetime="14:45">14:45–15:45</time>
-          <div><strong>Fiverr business work</strong><small>Profile, Gig, prices, or messages.</small></div>
+          <div><strong data-i18n="slotBiz">Fiverr business work</strong><small data-i18n="slotBizText">Profile, Gig, prices, or messages.</small></div>
         </li>
         <li>
           <time datetime="16:00">16:00–16:30</time>
-          <div><strong>Review</strong><small>Fix mistakes while they are still fresh.</small></div>
+          <div><strong data-i18n="slotReview">Review</strong><small data-i18n="slotReviewText">Fix mistakes while they are still fresh.</small></div>
         </li>
       </ol>
-      <p class="hours-note">Short breaks are already built in. Stop at 16:30 unless you are finishing a file.</p>
+      <p class="hours-note" data-i18n="hoursNote">Short breaks are already built in. Stop at 16:30 unless you are finishing a file.</p>
     </section>
 
-    <nav class="week-map" id="week" aria-label="Jump to a day"></nav>
+    <nav class="week-map" id="week" aria-label="Jump to a day" data-i18n-aria="weekLabel"></nav>
     <div id="days"></div>
 
     <section class="later">
-      <p class="kicker">Leave these on the shelf</p>
-      <h2>Do this after launch, not this week</h2>
-      <p>These things matter later. They will steal the week if you start them now.</p>
+      <p class="kicker" data-i18n="laterKicker">Leave these on the shelf</p>
+      <h2 data-i18n="laterTitle">Do this after launch, not this week</h2>
+      <p data-i18n="laterIntro">These things matter later. They will steal the week if you start them now.</p>
       <div class="lock-grid">
-        <div class="lock">Fiverr Ads</div>
-        <div class="lock">Seller Plus</div>
-        <div class="lock">Advanced analytics</div>
-        <div class="lock">Subscriptions</div>
-        <div class="lock">Building an agency</div>
-        <div class="lock">Hiring other people</div>
-        <div class="lock">Complex automation</div>
-        <div class="lock">Many different Gigs</div>
-        <div class="lock">Advanced branding</div>
-        <div class="lock">Top Rated strategy</div>
+        <div class="lock" data-i18n="lockAds">Fiverr Ads</div>
+        <div class="lock" data-i18n="lockPlus">Seller Plus</div>
+        <div class="lock" data-i18n="lockAnalytics">Advanced analytics</div>
+        <div class="lock" data-i18n="lockSubs">Subscriptions</div>
+        <div class="lock" data-i18n="lockAgency">Building an agency</div>
+        <div class="lock" data-i18n="lockHire">Hiring other people</div>
+        <div class="lock" data-i18n="lockAuto">Complex automation</div>
+        <div class="lock" data-i18n="lockMany">Many different Gigs</div>
+        <div class="lock" data-i18n="lockBrand">Advanced branding</div>
+        <div class="lock" data-i18n="lockTop">Top Rated strategy</div>
       </div>
-      <p>First prove you can finish <strong>one</strong> order like a professional.</p>
+      <p data-i18n="laterClose">First prove you can finish <strong>one</strong> order like a professional.</p>
     </section>
 
     <section class="rules">
-      <p class="kicker">After the Gig is live</p>
-      <h2>Rules for the first 30 days</h2>
+      <p class="kicker" data-i18n="rulesKicker">After the Gig is live</p>
+      <h2 data-i18n="rulesTitle">Rules for the first 30 days</h2>
       <div class="rule-grid">
-        <div class="rule">Keep only one main service.</div>
-        <div class="rule">Check messages often. Reply within 24 hours — faster is better.</div>
-        <div class="rule">Do not accept unclear orders.</div>
-        <div class="rule">Use delivery times you can really meet.</div>
-        <div class="rule">Send progress updates.</div>
-        <div class="rule">Deliver early only when the work is truly ready.</div>
-        <div class="rule">Check every file before you send it.</div>
-        <div class="rule">Never buy or fake reviews, orders, or traffic.</div>
-        <div class="rule">Each week write down impressions, clicks, messages, and orders.</div>
-        <div class="rule">Change only one Gig thing at a time.</div>
-        <div class="rule">Practise the actual skill at least one hour every day.</div>
-        <div class="rule">Do not spam strangers with your Gig.</div>
+        <div class="rule" data-i18n="rule1">Keep only one main service.</div>
+        <div class="rule" data-i18n="rule2">Check messages often. Reply within 24 hours — faster is better.</div>
+        <div class="rule" data-i18n="rule3">Do not accept unclear orders.</div>
+        <div class="rule" data-i18n="rule4">Use delivery times you can really meet.</div>
+        <div class="rule" data-i18n="rule5">Send progress updates.</div>
+        <div class="rule" data-i18n="rule6">Deliver early only when the work is truly ready.</div>
+        <div class="rule" data-i18n="rule7">Check every file before you send it.</div>
+        <div class="rule" data-i18n="rule8">Never buy or fake reviews, orders, or traffic.</div>
+        <div class="rule" data-i18n="rule9">Each week write down impressions, clicks, messages, and orders.</div>
+        <div class="rule" data-i18n="rule10">Change only one Gig thing at a time.</div>
+        <div class="rule" data-i18n="rule11">Practise the actual skill at least one hour every day.</div>
+        <div class="rule" data-i18n="rule12">Do not spam strangers with your Gig.</div>
       </div>
     </section>
 
     <section class="finish">
-      <p class="kicker">Remember</p>
-      <blockquote>One competent beginner who can attract, understand, and serve the first client — without avoidable cancellations, fights, or poor reviews.</blockquote>
+      <p class="kicker" data-i18n="remember">Remember</p>
+      <blockquote data-i18n="finishQuote">One competent beginner who can attract, understand, and serve the first client — without avoidable cancellations, fights, or poor reviews.</blockquote>
     </section>
   </main>
 
   <footer class="wrap">
-    <p>Progress is saved only in this browser. Print the page if you want a paper copy. Fake orders and fake reviews are never allowed.</p>
+    <p data-i18n="footer">Progress is saved only in this browser. Print the page if you want a paper copy. Fake orders and fake reviews are never allowed.</p>
     <div class="actions">
-      <button class="ghost" id="expand-all" type="button">Open every day</button>
-      <button class="ghost" id="reset-progress" type="button">Reset checklist</button>
+      <button class="ghost" id="expand-all" type="button" data-i18n="expandAll">Open every day</button>
+      <button class="ghost" id="reset-progress" type="button" data-i18n="reset">Reset checklist</button>
     </div>
   </footer>
 
   <noscript>
-    <p class="wrap">Turn on JavaScript to tick the boxes and save your progress.</p>
+    <p class="wrap" data-i18n="noscript">Turn on JavaScript to tick the boxes and save your progress.</p>
   </noscript>
+  <script src="i18n.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

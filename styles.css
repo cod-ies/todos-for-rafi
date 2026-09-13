@@ -121,6 +121,28 @@ a {
   max-width: 360px;
 }
 
+.lang-switch {
+  display: flex;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.lang-switch button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+}
+
+.lang-switch button.active {
+  background: var(--forest);
+  color: #fff;
+}
+
 .progress-label {
   display: flex;
   justify-content: space-between;
@@ -783,6 +805,54 @@ footer {
   color: var(--muted);
   font-size: 0.95rem;
   padding: 0 0 3rem;
+}
+
+html[dir="rtl"] {
+  --display: "Vazirmatn", Tahoma, sans-serif;
+  --sans: "Vazirmatn", Tahoma, sans-serif;
+}
+
+html[dir="rtl"] body {
+  font-size: 1.15rem;
+  line-height: 1.7;
+}
+
+html[dir="rtl"] .kicker,
+html[dir="rtl"] .when {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html[dir="rtl"] .skip {
+  left: auto;
+  right: 1rem;
+}
+
+html[dir="rtl"] .day-summary,
+html[dir="rtl"] .choice,
+html[dir="rtl"] th,
+html[dir="rtl"] td {
+  text-align: right;
+}
+
+html[dir="rtl"] .warn {
+  border-left: 0;
+  border-right: 5px solid var(--gold);
+}
+
+html[dir="rtl"] .stamp {
+  transform: rotate(6deg);
+}
+
+html[dir="rtl"] .chevron {
+  justify-self: start;
+  margin-right: 0;
+  margin-left: 0.4rem;
+}
+
+html[dir="rtl"] .copy-card p[lang="en"] {
+  font-family: "Atkinson Hyperlegible", "Segoe UI", sans-serif;
+  font-size: 1rem;
 }
 
 @media (min-width: 800px) {
