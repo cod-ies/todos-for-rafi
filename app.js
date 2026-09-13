@@ -701,12 +701,34 @@ function renderWeekMap() {
   }).join("");
 }
 
+function formatDuration(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const rest = seconds % 60;
+  return `${minutes}:${String(rest).padStart(2, "0")}`;
+}
+
+function videoForTask(taskId) {
+  const byService = DAY2_BY_SERVICE[state.service];
+  const key = (byService && byService[taskId]) || TASK_VIDEOS[taskId];
+  return key ? VIDEOS[key] : null;
+}
+
+function watchLink(video) {
+  if (!video) return "";
+  const label = `${t("watch")} ${formatDuration(video.seconds)}`;
+  const title = escapeHtml(video.title);
+  return `<a class="watch" href="https://www.youtube.com/watch?v=${encodeURIComponent(video.id)}" target="_blank" rel="noopener noreferrer" title="${title}" aria-label="${title}">${escapeHtml(label)}</a>`;
+}
+
 function renderTask(item) {
   const checked = Boolean(state.checks[item.id]);
-  return `<label class="task${checked ? " done" : ""}">
-    <input type="checkbox" data-check="${item.id}" ${checked ? "checked" : ""}>
-    <span>${itemText(item)}</span>
-  </label>`;
+  return `<div class="task-row">
+    <label class="task${checked ? " done" : ""}">
+      <input type="checkbox" data-check="${item.id}" ${checked ? "checked" : ""}>
+      <span>${itemText(item)}</span>
+    </label>
+    ${watchLink(videoForTask(item.id))}
+  </div>`;
 }
 
 function renderPicker() {
@@ -729,7 +751,11 @@ function renderStudy() {
   }
   const service = serviceCopy(SERVICES.find((item) => item.id === state.service));
   return `<div class="plain"><strong>${escapeHtml(t("studyBecause")(service.label))}</strong>
-    <ul>${extra.map((line) => `<li>${line}</li>`).join("")}</ul>
+    <ul>${extra.map((line, index) => {
+      const key = (STUDY_VIDEOS[state.service] || [])[index];
+      const video = key ? VIDEOS[key] : null;
+      return `<li class="study-line"><span>${line}</span>${watchLink(video)}</li>`;
+    }).join("")}</ul>
   </div>`;
 }
 
